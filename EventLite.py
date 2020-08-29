@@ -172,3 +172,13 @@ if __name__ == "__main__":
 
     connectEat.handleOn(eatApple)
     eat.handleEmit(10).handleEmit(11)
+
+    print("pipe")
+
+    def piper(*args):
+        return "pipe to "
+
+    eat.handleRemove()
+    pipeToDrink = eventLite.pipe("eat", piper, "drink")
+    eventLite.on("drink", drinkWater)
+    eventLite.emit("eat", 3333)

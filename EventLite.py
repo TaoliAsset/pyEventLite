@@ -20,8 +20,10 @@ class EventHandle(object):
         return self
 
     def handleConnect(self, eventLite=None):
-        self.eventLite.connect(self.event, eventLite)
-        return self
+        return self.eventLite.connect(self.event, eventLite)
+
+    def handlePipe(self, fn, follow):
+        return self.eventLite.pipe(self.event, fn)
 
 
 class EventLite(object):
@@ -106,6 +108,14 @@ class EventLite(object):
 
         return eventLite.handle(event)
 
+    def pipe(self, event, fn, follow):
+        def piper(*args):
+            value = fn(*args)
+            self.emit(follow, value)
+
+        self.on(event, piper)
+        return self.handle(follow)
+
     def handle(self, event):
         # print(make)
         return EventHandle(self, event)
@@ -162,3 +172,13 @@ if __name__ == "__main__":
 
     connectEat.handleOn(eatApple)
     eat.handleEmit(10).handleEmit(11)
+
+    print("pipe")
+
+    def piper(*args):
+        return "pipe to "
+
+    eat.handleRemove()
+    pipeToDrink = eventLite.pipe("eat", piper, "drink")
+    eventLite.on("drink", drinkWater)
+    eventLite.emit("eat", 3333)
